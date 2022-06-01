@@ -1,0 +1,30 @@
+ident: feito
+numero (real e int): feito
+op_mul: trivas
+op_ad: trivas
+op_un: trivas
+relacao: feito
+program_ident
+
+lista de palavras reservadas:
+var, program, begin, end, const, real, integer, procedure, else, read, write, while, if, do, then, *for*
+
+= -> simb_ig
+<> -> simb_dif
+>= -> simb_meig
+<= -> simb_maig
+> -> simb_maior
+< -> simb_menor
++ -> simb_mais
+- -> simb_menos
+* -> simb_vezes
+/ -> simb_div
+; -> simb_pv
+: -> simb_dp
+:= -> simb_atrib
+( -> simb_apar
+) -> simb_fpar
+. -> simb_p
+
+
+*Fazer Erros léxicos
