@@ -5,29 +5,33 @@
 char *automato_operadores_relacionais(FILE *pos) {
     FILE *aux;
     aux = pos;
-    char id[100];
+    char symbol[2];
     char buffer;
     //Estado q0
     fread(&buffer, sizeof(char), 1, aux);
     if (buffer == '<') {//Estado q1
+        strcat(symbol,buffer);
+        fread(&buffer, sizeof(char), 1, aux);
         if (buffer == '=') {//Estado q2
-            return buffer; //retorna  <= simb_meig
+            strcat(symbol,buffer);// <= simb_meig
         } else if (buffer == '>') {//Estado q3
-            return buffer; //retorna  <> simb_dif
+            strcat(symbol,buffer);// <> simb_dif
         } else {//Estado q4
-            return buffer; //retorna  > simb_menor
-            // retroceder
+            // > simb_menor
         }
     } else if (buffer == '=') {// Estado q5
-        return buffer; // retorna  = simb_ig
+        strcat(symbol,buffer);// = simb_ig
     } else if (buffer == '>') {// Estado q6
+        fread(&buffer, sizeof(char), 1, aux);
+        strcat(symbol,buffer);
         if (buffer == '=') {// Estado q7
-            return buffer; // retorna  <= simb_meig
+            strcat(symbol,buffer);// <= simb_meig
         } else {//Estado q8
-            return buffer; // retorna  > simb_maior
+            strcat(symbol,buffer);// > simb_maior
             // retroceder
         }
     }
+    return symbol;
 }
 
 char *automato_ident(FILE *pos) {
