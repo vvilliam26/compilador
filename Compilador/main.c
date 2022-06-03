@@ -17,12 +17,22 @@ char* automato_ident(FILE *pos) {
     if((buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122))
     {
         //Primeiro char eh letra
+        strcat(id, buffer);
 
         //Estado q1
-        while(()(buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122))
+        while((buffer >= 48 && buffer <= 57) || (buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122))
+        {
+            fread(&buffer, sizeof(char), 1, aux);
+            strcat(id, buffer);
+        }
+
+        if(BATE_HASH(buffer) == true)
+        {
+
+        }
 
     } else {
-        print("Erro");
+        print("Identificador mal formatado");
     }
 
 
