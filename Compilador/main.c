@@ -5,10 +5,10 @@
 
 
 char* automato_ident(FILE *pos) {
-    FILE *aux
+    FILE *aux;
     aux = pos;
     char id [100];
-    char buffer
+    char buffer;
 
     //Estado q0
     fread(&buffer, sizeof(char), 1, aux);
@@ -19,7 +19,9 @@ char* automato_ident(FILE *pos) {
         //Primeiro char eh letra
 
         //Estado q1
-        while(()(buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122))
+        while((buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122)){
+            
+        }
 
     } else {
         print("Erro");
