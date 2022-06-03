@@ -88,7 +88,7 @@ int automato_palavraReservada(FILE *pos, char* token) {
     while((buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122))
     {
         //caractere lido eh letra
-        strcat(simb, &buffer);
+        strcat(palavra, &buffer);
         fread(&buffer, sizeof(char), 1, aux);
     }
 
@@ -100,6 +100,95 @@ int automato_palavraReservada(FILE *pos, char* token) {
     } else {
         return 0;
     }
+
+    return 0;
+}
+
+
+int automato_numero(FILE *pos, char* token) {
+    FILE *aux;
+    aux = pos;
+    char numero[100];
+    char buffer;
+    char simb_int[] = "num_int";
+    char simb_real[] = "num_real";
+    int virgula = 0;
+
+    fread(&buffer, sizeof(char), 1, aux);
+
+    //estado q0 -> q1
+    if(buffer == 43 || buffer == 45)
+    {
+        //buffer eh +, - ou digito
+        strcat(numero, &buffer);
+
+    } else if(buffer >= 48 && buffer <= 57)
+    {
+        //estado qo -> q2
+        strcat(numero, &buffer);
+    }else
+    {
+        return 0;
+    }
+
+    fread(&buffer, sizeof(char), 1, aux);
+
+    //estado q2
+    while(buffer >= 48 && buffer <= 57)
+    {
+        //eh digito
+        strcat(numero, &buffer);
+        fread(&buffer, sizeof(char), 1, aux);
+    }
+
+    //checando o simbolo pos digito
+    if(buffer == 44)
+    {
+        //eh virgula
+        fread(&buffer, sizeof(char), 1, aux);
+
+        if(buffer >= 48 && buffer <= 57)
+        {
+            //pelo menos um digito pos virgula
+            strcat(numero, &buffer);
+        } else
+        {
+            //numero mal formatado
+            return 0;
+        }
+
+        fread(&buffer, sizeof(char), 1, aux);
+
+        while(buffer >= 48 && buffer <= 57)
+        {
+            //eh digito
+            strcat(numero, &buffer);
+            fread(&buffer, sizeof(char), 1, aux);
+        }
+    } else if(buffer == SIMB_VALIDO)
+    {
+        //nao eh virgula mas eh um simbolo valido que encerra o numero inteiro
+        token[0] = numero;
+        token[1] = simb_int;
+        return 1;
+    } else
+    {
+        //simbolo invalido
+        return 0;
+    }
+
+    if(buffer == SIMB_VALIDO)
+    {
+        //simb valido para determinar o numero real
+        token[0] = numero;
+        token[1] = simb_real;
+        return 1;
+    } else
+    {
+        //numero mal formatado
+        return 0;
+    }
+
 
     return 0;
 }
