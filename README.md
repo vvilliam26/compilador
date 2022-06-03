@@ -1,12 +1,12 @@
 # trab_kompilators
 
-ident: feito
-numero (real e int): feito
-op_mul: trivas
-op_ad: trivas
-op_un: trivas
-relacao: feito
-program_ident
+ident: revisar
+numero (real e int): revisar
+op_mul: fazer
+op_ad: fazer
+op_un: fazer
+relacao: revisar
+program_ident: fazer
 
 lista de palavras reservadas:
 var, program, begin, end, const, real, integer, procedure, else, read, write, while, if, do, then, *for*
