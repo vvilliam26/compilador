@@ -112,7 +112,6 @@ int automato_numero(FILE *pos, char* token) {
     char buffer;
     char simb_int[] = "num_int";
     char simb_real[] = "num_real";
-    int virgula = 0;
 
     fread(&buffer, sizeof(char), 1, aux);
 
@@ -191,6 +190,50 @@ int automato_numero(FILE *pos, char* token) {
 
 
     return 0;
+}
+
+
+int automato_comentario(FILE* pos, char* token) {
+    FILE *aux;
+    aux = pos;
+    char chaves[2] = "{}";
+    char buffer;
+    char simb_coment = "simb_comentario";
+
+    fread(&buffer, sizeof(char), 1, aux);
+
+    if(buffer == 123)
+    {
+        //abre chaves
+        fread(&buffer, sizeof(char), 1, aux);
+        while(buffer != 125 && buffer != EOF)
+        {
+            //comentario nao fechado
+            fread(&buffer, sizeof(char), 1, aux);
+        }
+
+        if(buffer == 125)
+        {
+            token[0] = chaves;
+            token[1] = simb_coment;
+            return 1;
+        } else
+        {
+            //comentario nao fechado
+            return -1;
+        }
+
+    } else
+    {
+        //nao eh comentario
+        return 0;
+    }
+
+    return 0;
+}
+
+int automato_parPontoPv(FILE* pos, char* token) {
+
 }
 
 int main() {
