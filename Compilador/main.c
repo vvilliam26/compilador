@@ -8,9 +8,7 @@ typedef struct token {
 } token;
 
 
-int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
-    FILE *aux;  // ponteiro ancora
-    aux = pos; // ponteiro auxiliar q avanca
+int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
     char symbol[2];
     char buffer;
     char simb_meig[] = "simb_meig";
@@ -26,10 +24,10 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
     char simb_dp[] = "simb_dp";
     char simb_atrib[] = "simb_atrib";
     //Estado q0
-    fread(&buffer, sizeof(char), 1, aux);
+    fread(&buffer, sizeof(char), 1, pos);
     if (buffer == 60) {//Estado q1 '<'
         strcat(symbol, buffer);
-        fread(&buffer, sizeof(char), 1, aux);
+        fread(&buffer, sizeof(char), 1, pos);
         if (buffer == 61) {//Estado q2 '='
             strcat(symbol, buffer);//
             token[0] = symbol; // '<='
@@ -43,7 +41,7 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
         } else {//Estado q4
             token[0] = symbol; // '<'
             token[1] = simb_menor; // "simb_menor"
-            aux--; //retroceder
+            pos--; //retroceder
             return 1; // retorna true
         }
     } else if (buffer == 61) { // Estado q5 '='
@@ -51,7 +49,7 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
         token[1] = simb_ig; // "simb_ig"
         return 1; // retorna true
     } else if (buffer == 62) { // Estado q6 '>'
-        fread(&buffer, sizeof(char), 1, aux);
+        fread(&buffer, sizeof(char), 1, pos);
         strcat(symbol, buffer);
         if (buffer == 61) {// Estado q7 '='
             strcat(symbol, buffer);
@@ -61,7 +59,7 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
         } else {//Estado q8
             token[0] = symbol; // '>'
             token[1] = simb_maior; // "simb_maior"
-            aux--; //retroceder
+            pos--; //retroceder
             return 1; // retorna true
         }
     } else if (buffer == 43) { // Estado q9 '+'
@@ -82,7 +80,7 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
         return 1; // retorna true
     } else if (buffer == 58) { // Estado q13 ':'
         strcat(symbol, buffer);
-        fread(&buffer, sizeof(char), 1, aux);
+        fread(&buffer, sizeof(char), 1, pos);
         if (buffer == 61) { //Estado q14 '='
             token[0] = symbol; // ':='
             token[1] = simb_atrib; // "simb_atrib"
@@ -90,11 +88,11 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
         } else { //Estado q15
             token[0] = symbol; // ':'
             token[1] = simb_dp; // "simb_dp"
-            aux--; // retroceder
+            pos--; // retroceder
             return 1; // retorna true
         }
     } else{ // Estado q16 eh um caractere n aceito por este automato
-        aux--; // retroceder
+        pos--; // retroceder
         return 0; // retorna false
     }
 }
@@ -144,7 +142,6 @@ int automato_ident(FILE *pos, token* tk) {
     return 0;
 }
 
-
 int automato_palavraReservada(FILE *pos, token* tk) {
     int pos_count = 0;
     char palavra[50] = "";
@@ -152,7 +149,7 @@ int automato_palavraReservada(FILE *pos, token* tk) {
     char simb[40];
 
     fread(&buffer[0], sizeof(char), 1, pos);
-//    pos_count++;
+    pos_count++;
     buffer[1] = '\0';
 
     while ((buffer[0] >= 66 && buffer[0] <= 90) || (buffer[0] >= 97 && buffer[0] <= 122)) {
@@ -176,67 +173,64 @@ int automato_palavraReservada(FILE *pos, token* tk) {
     return 0;
 }
 
-
-int automato_numero(FILE *pos, char *token) {
-    FILE *aux;
-    aux = pos;
+int automato_numero(FILE *pos, token* tk) {
     char numero[100];
-    char buffer;
+    char buffer[2];
     char simb_int[] = "num_int";
     char simb_real[] = "num_real";
 
-    fread(&buffer, sizeof(char), 1, aux);
+    fread(&buffer[0], sizeof(char), 1, pos);
+    buffer[1]='\0';
 
     //estado q0 -> q1
-    if (buffer == 43 || buffer == 45) {
+    if (buffer[0] == 43 || buffer[0] == 45) {
         //buffer eh +, - ou digito
-        strcat(numero, &buffer);
+        strcat(numero, buffer);
 
-    } else if(buffer >= 48 && buffer <= 57)
+    } else if(buffer[0] >= 48 && buffer[0] <= 57)
     {
         //estado qo -> q2 eh digito
-        strcat(numero, &buffer);
+        strcat(numero, buffer);
     }else
     {
         //nao eh numero
         return 0;
     }
 
-    fread(&buffer, sizeof(char), 1, aux);
+    fread(&buffer[0], sizeof(char), 1, pos);
 
     //estado q2
-    while (buffer >= 48 && buffer <= 57) {
+    while (buffer[0] >= 48 && buffer[0] <= 57) {
         //eh digito
-        strcat(numero, &buffer);
-        fread(&buffer, sizeof(char), 1, aux);
+        strcat(numero, buffer);
+        fread(&buffer[0], sizeof(char), 1, pos);
     }
 
     //checando o simbolo pos digito
-    if (buffer == 44) {
+    if (buffer[0] == 44) {
         //eh virgula
-        fread(&buffer, sizeof(char), 1, aux);
+        fread(&buffer[0], sizeof(char), 1, pos);
 
-        if (buffer >= 48 && buffer <= 57) {
+        if (buffer[0] >= 48 && buffer[0] <= 57) {
             //pelo menos um digito pos virgula
-            strcat(numero, &buffer);
+            strcat(numero, buffer);
         } else {
             //numero mal formatado
             return -1;
         }
 
-        fread(&buffer, sizeof(char), 1, aux);
+        fread(&buffer[0], sizeof(char), 1, pos);
 
-        while (buffer >= 48 && buffer <= 57) {
+        while (buffer[0] >= 48 && buffer[0] <= 57) {
             //eh digito
-            strcat(numero, &buffer);
-            fread(&buffer, sizeof(char), 1, aux);
+            strcat(numero, buffer);
+            fread(&buffer[0], sizeof(char), 1, pos);
         }
-    } else if(buffer == 1)
+    } else if(buffer[0] == 1)
     {
         //nao eh virgula mas eh um simbolo valido que encerra o numero inteiro
-        token[0] = numero;
-        token[1] = simb_int;
-        pos = aux;
+        strcpy(tk->simbolo_lido,numero);
+        strcpy(tk->nome_simbolo,simb_int);
         fseek(pos, -1, SEEK_CUR);
         return 1;
     } else
@@ -248,9 +242,8 @@ int automato_numero(FILE *pos, char *token) {
     if(buffer == ';')
     {
         //simb valido para determinar o numero real
-        token[0] = numero;
-        token[1] = simb_real;
-        pos = aux;
+        strcpy(tk->simbolo_lido,numero);
+        strcpy(tk->nome_simbolo,simb_real);
         fseek(pos, -1, SEEK_CUR);
         return 1;
     } else {
@@ -262,28 +255,26 @@ int automato_numero(FILE *pos, char *token) {
     return 0;
 }
 
-
-int automato_comentario(FILE *pos, char *token) {
-    FILE *aux;
-    aux = pos;
+int automato_comentario(FILE *pos, token* tk) {
     char chaves[2] = "{}";
-    char buffer;
+    char buffer[2];
     char simb_coment[] = "simb_comentario";
 
-    fread(&buffer, sizeof(char), 1, aux);
+    fread(&buffer[0], sizeof(char), 1, pos);
+    buffer[1]='\0';
 
-    if (buffer == 123) {
+    if (buffer[0] == 123) {
         //abre chaves
-        fread(&buffer, sizeof(char), 1, aux);
-        while (buffer != 125 && buffer != EOF) {
+        fread(&buffer[0], sizeof(char), 1, pos);
+        while (buffer[0] != 125 && buffer[0] != EOF) {
             //comentario nao fechado
-            fread(&buffer, sizeof(char), 1, aux);
+            fread(&buffer[0], sizeof(char), 1, pos);
         }
 
-        if (buffer == 125) {
-            token[0] = chaves;
-            token[1] = simb_coment;
-            pos = aux;
+        if (buffer[0] == 125) {
+            strcpy(tk->simbolo_lido,chaves);
+            strcpy(tk->nome_simbolo,simb_coment);
+            fseek(pos, -1, SEEK_CUR);
             return 1;
         } else {
             //comentario nao fechado
@@ -298,52 +289,46 @@ int automato_comentario(FILE *pos, char *token) {
     return 0;
 }
 
-int automato_parPontoPv(FILE* pos, char* token) {
-    FILE *aux;
-    aux = pos;
-    char buffer;
+int automato_parPontoPv(FILE* pos, token* tk) {
+    char buffer[2];
     char simb_apar[] = "simb_apar";
     char simb_fpar[] = "simb_fpar";
     char simb_p[] = "simb_p";
     char simb_v[] = "simb_v";
     char simb_pv[] = "simb_pv";
 
-    fread(&buffer, sizeof(char), 1, aux);
+    fread(&buffer[0], sizeof(char), 1, pos);
+    buffer[1]='\0';
 
-    switch(buffer)
+    switch(buffer[0])
     {
         case '(':
-            token[0] = &buffer;
-            token[1] = simb_apar;
-            pos = aux;
+            strcpy(tk->simbolo_lido,buffer);
+            strcpy(tk->nome_simbolo,simb_apar);
             return 1;
         break;
 
         case ')':
-            token[0] = &buffer;
-            token[1] = simb_fpar;
-            pos = aux;
+            strcpy(tk->simbolo_lido,buffer);
+            strcpy(tk->nome_simbolo,simb_fpar);
             return 1;
         break;
 
         case '.':
-            token[0] = &buffer;
-            token[1] = simb_p;
-            pos = aux;
+            strcpy(tk->simbolo_lido,buffer);
+            strcpy(tk->nome_simbolo,simb_p);
             return 1;
         break;
 
         case ',':
-            token[0] = &buffer;
-            token[1] = simb_v;
-            pos = aux;
+            strcpy(tk->simbolo_lido,buffer);
+            strcpy(tk->nome_simbolo,simb_v);
             return 1;
         break;
 
         case 'pv':
-            token[0] = &buffer;
-            token[1] = simb_pv;
-            pos = aux;
+            strcpy(tk->simbolo_lido,buffer);
+            strcpy(tk->nome_simbolo,simb_pv);
             return 1;
         break;
 
@@ -365,16 +350,28 @@ int main() {
 //    scanf("%s", filename);
 
 
-    pos = fopen("../../casos_Teste/1.txt", "r");
+    pos = fopen("../casos_Teste/1.txt", "r");
 
 
     while(feof(pos) == 0)
     {
         if(automato_palavraReservada(pos, &tk) == 1)
         {
-            printf("%s,%s",tk.simbolo_lido,tk.nome_simbolo);
+            printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
-        else if(automato_ident(&pos,&tk) == 1) {
+        else if(automato_ident(pos,&tk) == 1) {
+            printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+        }
+        else if(automato_parPontoPv(pos,&tk) == 1)
+        {
+            printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+        }
+        else if(automato_comentario(pos,&tk) == 1)
+        {
+            printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+        }
+        else if(automato_numero(pos,&tk) == 1)
+        {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
     }
