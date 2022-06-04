@@ -63,13 +63,15 @@ int automato_ident(FILE *pos, char* token[2]) {
         {
             token[0] = id;
             token[1] = simb;
-
+            pos = aux;
+            fseek(pos, -1, SEEK_CUR);
             return 1;
         }
 
     } else {
-        printf("Identificador mal formatado");
-        return 0;
+//        printf("Identificador mal formatado");
+        //identificador mal formado
+        return -1;
     }
 
     return 0;
@@ -95,9 +97,11 @@ int automato_palavraReservada(FILE *pos, char* token) {
     if(/*BATE_HASH(palavra, &simb) == 1 */) {
         token[0] = palavra;
         token[1] = simb;
-
+        pos = aux;
+        fseek(pos, -1, SEEK_CUR);
         return 1;
     } else {
+        //nao eh palavra reservada
         return 0;
     }
 
@@ -123,10 +127,11 @@ int automato_numero(FILE *pos, char* token) {
 
     } else if(buffer >= 48 && buffer <= 57)
     {
-        //estado qo -> q2
+        //estado qo -> q2 eh digito
         strcat(numero, &buffer);
     }else
     {
+        //nao eh numero
         return 0;
     }
 
@@ -153,7 +158,7 @@ int automato_numero(FILE *pos, char* token) {
         } else
         {
             //numero mal formatado
-            return 0;
+            return -1;
         }
 
         fread(&buffer, sizeof(char), 1, aux);
@@ -169,11 +174,13 @@ int automato_numero(FILE *pos, char* token) {
         //nao eh virgula mas eh um simbolo valido que encerra o numero inteiro
         token[0] = numero;
         token[1] = simb_int;
+        pos = aux;
+        fseek(pos, -1, SEEK_CUR);
         return 1;
     } else
     {
-        //simbolo invalido
-        return 0;
+        //simbolo invalido -> numero mal formatado
+        return -1;
     }
 
     if(buffer == SIMB_VALIDO)
@@ -181,11 +188,13 @@ int automato_numero(FILE *pos, char* token) {
         //simb valido para determinar o numero real
         token[0] = numero;
         token[1] = simb_real;
+        pos = aux;
+        fseek(pos, -1, SEEK_CUR);
         return 1;
     } else
     {
         //numero mal formatado
-        return 0;
+        return -1;
     }
 
 
@@ -216,6 +225,7 @@ int automato_comentario(FILE* pos, char* token) {
         {
             token[0] = chaves;
             token[1] = simb_coment;
+            pos = aux;
             return 1;
         } else
         {
@@ -233,7 +243,60 @@ int automato_comentario(FILE* pos, char* token) {
 }
 
 int automato_parPontoPv(FILE* pos, char* token) {
+    FILE *aux;
+    aux = pos;
+    char buffer;
+    char simb_apar[] = "simb_apar";
+    char simb_fpar[] = "simb_fpar";
+    char simb_p[] = "simb_p";
+    char simb_v[] = "simb_v";
+    char simb_pv[] = "simb_pv";
 
+    fread(&buffer, sizeof(char), 1, aux);
+
+    switch(buffer)
+    {
+        case '(':
+            token[0] = &buffer;
+            token[1] = simb_apar;
+            pos = aux;
+            return 1;
+        break;
+
+        case ')':
+            token[0] = &buffer;
+            token[1] = simb_fpar;
+            pos = aux;
+            return 1;
+        break;
+
+        case '.':
+            token[0] = &buffer;
+            token[1] = simb_p;
+            pos = aux;
+            return 1;
+        break;
+
+        case ',':
+            token[0] = &buffer;
+            token[1] = simb_v;
+            pos = aux;
+            return 1;
+        break;
+
+        case 'pv':
+            token[0] = &buffer;
+            token[1] = simb_pv;
+            pos = aux;
+            return 1;
+        break;
+
+        default:
+            //nao eh nenhum simbolo acima
+            return 0;
+    }
+
+    return 0;
 }
 
 int main() {
