@@ -3,8 +3,8 @@
 #include <string.h>
 
 int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
-    FILE *aux;
-    aux = pos;
+    FILE *aux;  // ponteiro ancora
+    aux = pos; // ponteiro auxiliar q avanca
     char symbol[2];
     char buffer;
     char simb_meig[] = "simb_meig";
@@ -28,67 +28,71 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
             strcat(symbol, buffer);//
             token[0] = symbol; // '<='
             token[1] = simb_meig; // "simb_meig"
-            return 1;
+            return 1; // retorna true
         } else if (buffer == 62) {//Estado q3 '>'
             strcat(symbol, buffer);
             token[0] = symbol; // '<>'
             token[1] = simb_dif; // "simb_dif"
-            return 1;
+            return 1; // retorna true
         } else {//Estado q4
             token[0] = symbol; // '<'
             token[1] = simb_menor; // "simb_menor"
             aux--; //retroceder
-            return 1;
+            return 1; // retorna true
         }
     } else if (buffer == 61) { // Estado q5 '='
         token[0] = symbol; // '='
         token[1] = simb_ig; // "simb_ig"
-        return 1;
+        return 1; // retorna true
     } else if (buffer == 62) { // Estado q6 '>'
         fread(&buffer, sizeof(char), 1, aux);
         strcat(symbol, buffer);
         if (buffer == 61) {// Estado q7 '='
             strcat(symbol, buffer);
-            token[0] = symbol; // '<='
-            token[1] = simb_meig; // "simb_meig"
-            return 1;
+            token[0] = symbol; // '>='
+            token[1] = simb_maig; // "simb_maig"
+            return 1; // retorna true
         } else {//Estado q8
             token[0] = symbol; // '>'
             token[1] = simb_maior; // "simb_maior"
             aux--; //retroceder
-            return 1;
+            return 1; // retorna true
         }
     } else if (buffer == 43) { // Estado q9 '+'
         token[0] = symbol; // '+'
         token[1] = simb_soma; // "simb_soma"
-        return 1;
+        return 1; // retorna true
     } else if (buffer == 45) { // Estado q10 '-'
         token[0] = symbol; // '-'
         token[1] = simb_subt; // "simb_subt"
-        return 1;
+        return 1; // retorna true
     } else if (buffer == 42) { // Estado q11 '*'
         token[0] = symbol; // '*'
         token[1] = simb_mult; // "simb_mult"
-        return 1;
+        return 1; // retorna true
     } else if (buffer == 47) { // Estado q12 '/'
         token[0] = symbol; // '/'
         token[1] = simb_div; // "simb_div"
-        return 1;
+        return 1; // retorna true
     } else if (buffer == 58) { // Estado q13 ':'
         strcat(symbol, buffer);
         fread(&buffer, sizeof(char), 1, aux);
-        if (buffer == 61) { //Estado q15 '='
+        if (buffer == 61) { //Estado q14 '='
             token[0] = symbol; // ':='
             token[1] = simb_atrib; // "simb_atrib"
-            return 1;
-        } else { //Estado q14
+            return 1; // retorna true
+        } else { //Estado q15
             token[0] = symbol; // ':'
             token[1] = simb_dp; // "simb_dp"
             aux--; // retroceder
-            return 1;
+            return 1; // retorna true
         }
+    } else{ // Estado q16 eh um caractere n aceito por este automato
+        aux--; // retroceder
+        return 0; // retorna false
     }
 }
+
 
 int automato_ident(FILE *pos, char *token[2]) {
     FILE *aux;
@@ -269,9 +273,11 @@ int automato_comentario(FILE *pos, char *token) {
     return 0;
 }
 
+
 int automato_parPontoPv(FILE *pos, char *token) {
 
 }
+
 
 int main() {
     printf("Hello world!\n");
