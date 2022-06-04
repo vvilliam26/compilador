@@ -59,8 +59,9 @@ int automato_ident(FILE *pos, char* token[2]) {
 
         }
 
-        if(/*BATE_HASH(buffer) == 1*/1)
+        if(buffer == ';' || buffer == '*' || buffer == '=')
         {
+            //simbolo valido apos ident
             token[0] = id;
             token[1] = simb;
             pos = aux;
@@ -78,12 +79,12 @@ int automato_ident(FILE *pos, char* token[2]) {
 }
 
 
-int automato_palavraReservada(FILE *pos, char* token) {
+int automato_palavraReservada(FILE *pos, char* token[2]) {
     FILE *aux;
     aux = pos;
     char palavra[100];
     char buffer;
-    char *simb;
+    char simb[] = "cuzin";
 
     fread(&buffer, sizeof(char), 1, aux);
 
@@ -169,7 +170,7 @@ int automato_numero(FILE *pos, char* token) {
             strcat(numero, &buffer);
             fread(&buffer, sizeof(char), 1, aux);
         }
-    } else if(buffer == SIMB_VALIDO)
+    } else if(buffer == 1)
     {
         //nao eh virgula mas eh um simbolo valido que encerra o numero inteiro
         token[0] = numero;
@@ -183,7 +184,7 @@ int automato_numero(FILE *pos, char* token) {
         return -1;
     }
 
-    if(buffer == SIMB_VALIDO)
+    if(buffer == ';')
     {
         //simb valido para determinar o numero real
         token[0] = numero;
@@ -300,6 +301,28 @@ int automato_parPontoPv(FILE* pos, char* token) {
 }
 
 int main() {
-    printf("Hello world!\n");
+    FILE* pos;
+//    char *filename;
+    char *token[2];
+
+//    printf("Digite o nome do arquivo");
+//    scanf("%s", filename);
+
+
+    pos = fopen("../../casos_Teste/1.txt", "r");
+
+
+    while(pos != EOF)
+    {
+        if(automato_palavraReservada(pos, token) == 1)
+        {
+            printf("%s,%s",token[0],token[1]);
+        }else if(automato_ident(pos,token) == 1) {
+            printf("%s,%s",token[0],token[1]);
+        }
+    }
+
+    fclose(pos);
+
     return 0;
 }

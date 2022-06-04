@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1654305029 source:c:\users\vinic\onedrive\documentos\facu\7 semestre\compiladores\t1\trab_kompilators\compilador\main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
