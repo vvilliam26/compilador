@@ -9,8 +9,8 @@ typedef struct token {
 
 
 int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
-    char symbol[2];
-    char buffer;
+    char symbol[2] ="";
+    char buffer[2];
     char simb_meig[] = "simb_meig";
     char simb_dif[] = "simb_dif";
     char simb_menor[] = "simb_menor";
@@ -23,90 +23,94 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
     char simb_div[] = "simb_div";
     char simb_dp[] = "simb_dp";
     char simb_atrib[] = "simb_atrib";
+
     //Estado q0
-    fread(&buffer, sizeof(char), 1, pos);
-    if (buffer == 60) {//Estado q1 '<'
+    fread(&buffer[0], sizeof(char), 1, pos);
+    buffer[1] = '\0';
+
+    if (buffer[0] == 60) {//Estado q1 '<'
         strcat(symbol, buffer);
-        fread(&buffer, sizeof(char), 1, pos);
-        if (buffer == 61) {//Estado q2 '='
+        fread(&buffer[0], sizeof(char), 1, pos);
+
+        if (buffer[0] == 61) {//Estado q2 '='
             strcat(symbol, buffer);//
-            token[0] = symbol; // '<='
-            token[1] = simb_meig; // "simb_meig"
+            strcpy(tk->simbolo_lido, symbol); // '<='
+            strcpy(tk->nome_simbolo, simb_meig); // "simb_meig"
             return 1; // retorna true
-        } else if (buffer == 62) {//Estado q3 '>'
+        } else if (buffer[0] == 62) {//Estado q3 '>'
             strcat(symbol, buffer);
-            token[0] = symbol; // '<>'
-            token[1] = simb_dif; // "simb_dif"
+            strcpy(tk->simbolo_lido, symbol); // '<>'
+            strcpy(tk->nome_simbolo, simb_dif); // "simb_dif"
             return 1; // retorna true
         } else {//Estado q4
-            token[0] = symbol; // '<'
-            token[1] = simb_menor; // "simb_menor"
-            pos--; //retroceder
+            strcpy(tk->simbolo_lido, symbol); // '<'
+            strcpy(tk->nome_simbolo, simb_menor); // "simb_menor"
+            fseek(pos, -1, SEEK_CUR);
             return 1; // retorna true
         }
-    } else if (buffer == 61) { // Estado q5 '='
-        token[0] = symbol; // '='
-        token[1] = simb_ig; // "simb_ig"
+    } else if (buffer[0] == 61) { // Estado q5 '='
+        strcpy(tk->simbolo_lido, symbol); // '='
+        strcpy(tk->nome_simbolo, simb_ig); // "simb_ig"
         return 1; // retorna true
-    } else if (buffer == 62) { // Estado q6 '>'
-        fread(&buffer, sizeof(char), 1, pos);
+    } else if (buffer[0] == 62) { // Estado q6 '>'
+        fread(&buffer[0], sizeof(char), 1, pos);
         strcat(symbol, buffer);
-        if (buffer == 61) {// Estado q7 '='
+
+        if (buffer[0] == 61) {// Estado q7 '='
             strcat(symbol, buffer);
-            token[0] = symbol; // '>='
-            token[1] = simb_maig; // "simb_maig"
+            strcpy(tk->simbolo_lido, symbol); // '>='
+            strcpy(tk->nome_simbolo, simb_maig); // "simb_maig"
             return 1; // retorna true
         } else {//Estado q8
-            token[0] = symbol; // '>'
-            token[1] = simb_maior; // "simb_maior"
-            pos--; //retroceder
+            strcpy(tk->simbolo_lido, symbol); // '>'
+            strcpy(tk->nome_simbolo, simb_maior); // "simb_maior"
+            fseek(pos, -1, SEEK_CUR); //retroceder
             return 1; // retorna true
         }
-    } else if (buffer == 43) { // Estado q9 '+'
-        token[0] = symbol; // '+'
-        token[1] = simb_soma; // "simb_soma"
+    } else if (buffer[0] == 43) { // Estado q9 '+'
+        strcpy(tk->simbolo_lido, symbol); // '+'
+        strcpy(tk->nome_simbolo, simb_soma); // "simb_soma"
         return 1; // retorna true
-    } else if (buffer == 45) { // Estado q10 '-'
-        token[0] = symbol; // '-'
-        token[1] = simb_subt; // "simb_subt"
+    } else if (buffer[0] == 45) { // Estado q10 '-'
+        strcpy(tk->simbolo_lido, symbol); // '-'
+        strcpy(tk->nome_simbolo, simb_subt); // "simb_subt"
         return 1; // retorna true
-    } else if (buffer == 42) { // Estado q11 '*'
-        token[0] = symbol; // '*'
-        token[1] = simb_mult; // "simb_mult"
+    } else if (buffer[0] == 42) { // Estado q11 '*'
+        strcpy(tk->simbolo_lido, symbol); // '*'
+        strcpy(tk->nome_simbolo, simb_mult); // "simb_mult"
         return 1; // retorna true
-    } else if (buffer == 47) { // Estado q12 '/'
-        token[0] = symbol; // '/'
-        token[1] = simb_div; // "simb_div"
+    } else if (buffer[0] == 47) { // Estado q12 '/'
+        strcpy(tk->simbolo_lido, symbol); // '/'
+        strcpy(tk->nome_simbolo, simb_div); // "simb_div"
         return 1; // retorna true
-    } else if (buffer == 58) { // Estado q13 ':'
+    } else if (buffer[0] == 58) { // Estado q13 ':'
         strcat(symbol, buffer);
-        fread(&buffer, sizeof(char), 1, pos);
-        if (buffer == 61) { //Estado q14 '='
-            token[0] = symbol; // ':='
-            token[1] = simb_atrib; // "simb_atrib"
+        fread(&buffer[0], sizeof(char), 1, pos);
+        if (buffer[0] == 61) { //Estado q14 '='
+            strcpy(tk->simbolo_lido, symbol); // ':='
+            strcpy(tk->nome_simbolo, simb_atrib); // "simb_atrib"
             return 1; // retorna true
         } else { //Estado q15
-            token[0] = symbol; // ':'
-            token[1] = simb_dp; // "simb_dp"
-            pos--; // retroceder
+            strcpy(tk->simbolo_lido, symbol); // ':'
+            strcpy(tk->nome_simbolo, simb_dp); // "simb_dp"
+            fseek(pos, -1, SEEK_CUR); // retroceder
             return 1; // retorna true
         }
     } else{ // Estado q16 eh um caractere n aceito por este automato
-        pos--; // retroceder
+        fseek(pos, -1, SEEK_CUR); // retroceder
         return 0; // retorna false
     }
 }
 
-
 int automato_ident(FILE *pos, token* tk) {
-    int pos_count = 0;
+//    int pos_count = 0;
     char id[50];
     char buffer[2];
     char simb[] = "ident";
 
     //Estado q0
     fread(&buffer[0], sizeof(char), 1, pos);
-    pos_count++;
+//    pos_count++;
     buffer[1] = '\0';
 
 
@@ -115,12 +119,13 @@ int automato_ident(FILE *pos, token* tk) {
         strcat(id, buffer);
 
         fread(&buffer[0], sizeof(char), 1, pos); //move o ponteiro
+//        pos_count++;
         //Estado q1
         while ((buffer[0] >= 48 && buffer[0] <= 57) || (buffer[0] >= 66 && buffer[0] <= 90) || (buffer[0] >= 97 && buffer[0] <= 122)) {
-            strcat(id, &buffer);
+            strcat(id, buffer);
             //caractere lido eh letra ou digito
             fread(&buffer[0], sizeof(char), 1, pos);
-            pos_count++;
+//            pos_count++;
         }
 
         if(buffer[0] == ';' || buffer[0] == '*' || buffer[0] == '=')
@@ -130,13 +135,16 @@ int automato_ident(FILE *pos, token* tk) {
             strcpy(tk->nome_simbolo,simb);
             fseek(pos, -1, SEEK_CUR);
             return 1;
+        } else {
+            //identificador mal formatado
+            fseek(pos, -1, SEEK_CUR);
+            return 0;
         }
 
     } else {
-//        printf("Identificador mal formatado");
-        //identificador mal formado
-        fseek(pos, -1 * pos_count, SEEK_CUR);
-        return -1;
+        //nao eh ident
+        fseek(pos, -1, SEEK_CUR);
+        return 0;
     }
 
     return 0;
@@ -194,6 +202,7 @@ int automato_numero(FILE *pos, token* tk) {
     }else
     {
         //nao eh numero
+        fseek(pos, -1, SEEK_CUR);
         return 0;
     }
 
@@ -216,6 +225,7 @@ int automato_numero(FILE *pos, token* tk) {
             strcat(numero, buffer);
         } else {
             //numero mal formatado
+            fseek(pos, -1, SEEK_CUR);
             return -1;
         }
 
@@ -236,10 +246,11 @@ int automato_numero(FILE *pos, token* tk) {
     } else
     {
         //simbolo invalido -> numero mal formatado
+        fseek(pos, -1, SEEK_CUR);
         return -1;
     }
 
-    if(buffer == ';')
+    if(buffer[0] == ';')
     {
         //simb valido para determinar o numero real
         strcpy(tk->simbolo_lido,numero);
@@ -248,6 +259,7 @@ int automato_numero(FILE *pos, token* tk) {
         return 1;
     } else {
         //numero mal formatado
+        fseek(pos, -1, SEEK_CUR);
         return -1;
     }
 
@@ -283,6 +295,7 @@ int automato_comentario(FILE *pos, token* tk) {
 
     } else {
         //nao eh comentario
+        fseek(pos, -1, SEEK_CUR);
         return 0;
     }
 
@@ -326,7 +339,7 @@ int automato_parPontoPv(FILE* pos, token* tk) {
             return 1;
         break;
 
-        case 'pv':
+        case ';':
             strcpy(tk->simbolo_lido,buffer);
             strcpy(tk->nome_simbolo,simb_pv);
             return 1;
@@ -334,6 +347,7 @@ int automato_parPontoPv(FILE* pos, token* tk) {
 
         default:
             //nao eh nenhum simbolo acima
+            fseek(pos, -1, SEEK_CUR); //retroceder()
             return 0;
     }
 
@@ -352,8 +366,13 @@ int main() {
 
     pos = fopen("../casos_Teste/1.txt", "r");
 
+    if(!pos) {
+        printf("Erro ao abrir o arquivo.\n");
+        return 0;
+    }
 
-    while(feof(pos) == 0)
+
+    while(!feof(pos))
     {
         if(automato_palavraReservada(pos, &tk) == 1)
         {
@@ -371,6 +390,10 @@ int main() {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
         else if(automato_numero(pos,&tk) == 1)
+        {
+            printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+        }
+        else if(automato_operel_sinmat_atrib_dp(pos,&tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
