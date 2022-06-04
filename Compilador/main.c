@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct token {
+    char simbolo_lido[50];
+    char nome_simbolo[40];
+} token;
+
+
 int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
     FILE *aux;  // ponteiro ancora
     aux = pos; // ponteiro auxiliar q avanca
@@ -94,36 +100,36 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, char *token[2]) {
 }
 
 
-int automato_ident(FILE *pos, char *token[2]) {
-    FILE *aux;
-    aux = pos;
-    char id[100];
-    char buffer;
+int automato_ident(FILE *pos, token* tk) {
+    int pos_count = 0;
+    char id[50];
+    char buffer[2];
     char simb[] = "ident";
 
     //Estado q0
-    fread(&buffer, sizeof(char), 1, aux);
+    fread(&buffer[0], sizeof(char), 1, pos);
+    pos_count++;
+    buffer[1] = '\0';
 
 
-    if ((buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122)) {
-        //Primeiro char eh letra
-        strcat(id, &buffer);
+    if ((buffer[0] >= 66 && buffer[0] <= 90) || (buffer[0] >= 97 && buffer[0] <= 122)) {
+        //Primeiro chars eh letra
+        strcat(id, buffer);
 
-        fread(&buffer, sizeof(char), 1, aux); //move o ponteiro
+        fread(&buffer[0], sizeof(char), 1, pos); //move o ponteiro
         //Estado q1
-        while ((buffer >= 48 && buffer <= 57) || (buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122)) {
+        while ((buffer[0] >= 48 && buffer[0] <= 57) || (buffer[0] >= 66 && buffer[0] <= 90) || (buffer[0] >= 97 && buffer[0] <= 122)) {
             strcat(id, &buffer);
             //caractere lido eh letra ou digito
-            fread(&buffer, sizeof(char), 1, aux);
-
+            fread(&buffer[0], sizeof(char), 1, pos);
+            pos_count++;
         }
 
-        if(buffer == ';' || buffer == '*' || buffer == '=')
+        if(buffer[0] == ';' || buffer[0] == '*' || buffer[0] == '=')
         {
             //simbolo valido apos ident
-            token[0] = id;
-            token[1] = simb;
-            pos = aux;
+            strcpy(tk->simbolo_lido,id);
+            strcpy(tk->nome_simbolo,simb);
             fseek(pos, -1, SEEK_CUR);
             return 1;
         }
@@ -131,6 +137,7 @@ int automato_ident(FILE *pos, char *token[2]) {
     } else {
 //        printf("Identificador mal formatado");
         //identificador mal formado
+        fseek(pos, -1 * pos_count, SEEK_CUR);
         return -1;
     }
 
@@ -138,29 +145,31 @@ int automato_ident(FILE *pos, char *token[2]) {
 }
 
 
-int automato_palavraReservada(FILE *pos, char* token[2]) {
-    FILE *aux;
-    aux = pos;
-    char palavra[100];
-    char buffer;
-    char simb[] = "cuzin";
+int automato_palavraReservada(FILE *pos, token* tk) {
+    int pos_count = 0;
+    char palavra[50] = "";
+    char buffer[2];
+    char simb[40];
 
-    fread(&buffer, sizeof(char), 1, aux);
+    fread(&buffer[0], sizeof(char), 1, pos);
+//    pos_count++;
+    buffer[1] = '\0';
 
-    while ((buffer >= 66 && buffer <= 90) || (buffer >= 97 && buffer <= 122)) {
+    while ((buffer[0] >= 66 && buffer[0] <= 90) || (buffer[0] >= 97 && buffer[0] <= 122)) {
         //caractere lido eh letra
-        strcat(palavra, &buffer);
-        fread(&buffer, sizeof(char), 1, aux);
+        strcat(palavra, buffer);
+        fread(&buffer[0], sizeof(char), 1, pos);
+        pos_count++;
     }
 
-    if(/*BATE_HASH(palavra, &simb) == 1 */1) {
-        token[0] = palavra;
-        token[1] = simb;
-        pos = aux;
+    if(strcmp(palavra,"program") == 0) {
+        strcpy(tk->simbolo_lido,palavra);
+        strcpy(tk->nome_simbolo,"simb_program");
         fseek(pos, -1, SEEK_CUR);
         return 1;
     } else {
         //nao eh palavra reservada
+        fseek(pos, -1 * pos_count, SEEK_CUR);
         return 0;
     }
 
@@ -220,7 +229,7 @@ int automato_numero(FILE *pos, char *token) {
         while (buffer >= 48 && buffer <= 57) {
             //eh digito
             strcat(numero, &buffer);
-            &buffer, sizeof(char), 1, aux);
+            fread(&buffer, sizeof(char), 1, aux);
         }
     } else if(buffer == 1)
     {
@@ -350,7 +359,7 @@ int automato_parPontoPv(FILE* pos, char* token) {
 int main() {
     FILE* pos;
 //    char *filename;
-    char *token[2];
+    token tk;
 
 //    printf("Digite o nome do arquivo");
 //    scanf("%s", filename);
@@ -359,13 +368,14 @@ int main() {
     pos = fopen("../../casos_Teste/1.txt", "r");
 
 
-    while(pos != EOF)
+    while(feof(pos) == 0)
     {
-        if(automato_palavraReservada(pos, token) == 1)
+        if(automato_palavraReservada(pos, &tk) == 1)
         {
-            printf("%s,%s",token[0],token[1]);
-        }else if(automato_ident(pos,token) == 1) {
-            printf("%s,%s",token[0],token[1]);
+            printf("%s,%s",tk.simbolo_lido,tk.nome_simbolo);
+        }
+        else if(automato_ident(&pos,&tk) == 1) {
+            printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
     }
 
