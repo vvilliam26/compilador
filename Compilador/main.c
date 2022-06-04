@@ -94,7 +94,7 @@ int automato_palavraReservada(FILE *pos, char* token) {
         fread(&buffer, sizeof(char), 1, aux);
     }
 
-    if(/*BATE_HASH(palavra, &simb) == 1 */) {
+    if(/*BATE_HASH(palavra, &simb) == 1 */1) {
         token[0] = palavra;
         token[1] = simb;
         pos = aux;
@@ -207,7 +207,7 @@ int automato_comentario(FILE* pos, char* token) {
     aux = pos;
     char chaves[2] = "{}";
     char buffer;
-    char simb_coment = "simb_comentario";
+    char simb_coment[] = "simb_comentario";
 
     fread(&buffer, sizeof(char), 1, aux);
 
