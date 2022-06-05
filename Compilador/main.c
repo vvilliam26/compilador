@@ -224,10 +224,10 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
 }
 
 int automato_ident(FILE *pos, token* tk) {
-//    int pos_count = 0;
     char id[50];
     char buffer[2];
     char simb_ident[] = "ident";
+    int tam = 0;
 
     //Estado q0
     fread(&buffer[0], sizeof(char), 1, pos);
@@ -238,15 +238,25 @@ int automato_ident(FILE *pos, token* tk) {
     if ((buffer[0] >= 66 && buffer[0] <= 90) || (buffer[0] >= 97 && buffer[0] <= 122)) {
         //Primeiro chars eh letra
         strcat(id, buffer);
+        tam++;
 
         fread(&buffer[0], sizeof(char), 1, pos); //move o ponteiro
 //        pos_count++;
         //Estado q1
         while ((buffer[0] >= 48 && buffer[0] <= 57) || (buffer[0] >= 66 && buffer[0] <= 90) || (buffer[0] >= 97 && buffer[0] <= 122)) {
             strcat(id, buffer);
+            tam++;
             //caractere lido eh letra ou digito
             fread(&buffer[0], sizeof(char), 1, pos);
 //            pos_count++;
+        }
+
+        if(tam >= 49) {
+            id[49] ='\0';
+            strcpy(tk->simbolo_lido,id);
+            strcpy(tk->nome_simbolo,"erro(\"Identificador muito grande\")");
+            fseek(pos, -1, SEEK_CUR);
+            return 1;
         }
 
         if(valida_simbolo(buffer) == 1)

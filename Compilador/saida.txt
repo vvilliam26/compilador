@@ -5,6 +5,5 @@ var, simb_var
 x, ident
 @, erro("caractere nao permitido")
 :=, simb_atrib
-2.a, erro("Numero mal formatado")
-b, ident
+aaaaaaaaaa, erro("Identificador muito grande")
 ;, simb_pv
