@@ -1,0 +1,10 @@
+program, simb_program
+p, ident
+;, simb_pv
+{}, simb_comentario
+var, simb_var
+x, ident
+@, erro("caractere nao permitido")
+:, simb_dp
+integer, simb_integer
+;, simb_pv
