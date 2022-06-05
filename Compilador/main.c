@@ -7,9 +7,130 @@ typedef struct token {
     char nome_simbolo[40];
 } token;
 
+int checa_palavraReservada(char* palavra, token* tk) {
+    if(strcmp(palavra,"var") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_var");
+        return 1;
+    }
+    else if(strcmp(palavra,"program") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_program");
+        return 1;
+    }
+    else if(strcmp(palavra,"begin") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_begin");
+        return 1;
+    }
+     else if(strcmp(palavra,"end") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_end");
+        return 1;
+    }
+     else if(strcmp(palavra,"const") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_const");
+        return 1;
+    }
+     else if(strcmp(palavra,"real") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_real");
+        return 1;
+    }
+     else if(strcmp(palavra,"integer") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_integer");
+        return 1;
+    }
+     else if(strcmp(palavra,"procedure") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_procedure");
+        return 1;
+    }
+     else if(strcmp(palavra,"else") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_else");
+        return 1;
+    }
+     else if(strcmp(palavra,"read") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_read");
+        return 1;
+    }
+     else if(strcmp(palavra,"write") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_write");
+        return 1;
+    }
+         else if(strcmp(palavra,"while") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_while");
+        return 1;
+    }
+     else if(strcmp(palavra,"if") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_if");
+        return 1;
+    }
+     else if(strcmp(palavra,"do") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_do");
+        return 1;
+    }
+     else if(strcmp(palavra,"then") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_then");
+        return 1;
+    }
+     else if(strcmp(palavra,"for") == 0)
+    {
+        strcpy(tk->nome_simbolo, "simb_for");
+        return 1;
+    }
+
+    return 0;
+}
+
+int simbolo_valido(char* simb) {
+    if(strcmp(simb, "="))
+        return 1;
+    else if(strcmp(simb, "<>"))
+        return 1;
+    else if(strcmp(simb, ">="))
+        return 1;
+    else if(strcmp(simb, "<="))
+        return 1;
+    else if(strcmp(simb, ">"))
+        return 1;
+    else if(strcmp(simb, "<"))
+        return 1;
+    else if(strcmp(simb, "+"))
+        return 1;
+    else if(strcmp(simb, "-"))
+        return 1;
+    else if(strcmp(simb, "*"))
+        return 1;
+    else if(strcmp(simb, "/"))
+        return 1;
+    else if(strcmp(simb, ";"))
+        return 1;
+    else if(strcmp(simb, ":"))
+        return 1;
+    else if(strcmp(simb, ":="))
+        return 1;
+    else if(strcmp(simb, "("))
+        return 1;
+    else if(strcmp(simb, ")"))
+        return 1;
+    else if(strcmp(simb, "."))
+        return 1;
+
+    return 0;
+}
 
 int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
-    char symbol[3] = "";
+    char symbol[3];
     char buffer[2];
     char simb_meig[] = "simb_meig";
     char simb_dif[] = "simb_dif";
@@ -28,8 +149,10 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
     fread(&buffer[0], sizeof(char), 1, pos);
     buffer[1] = '\0';
 
+    symbol[0] = buffer[0];
+
     if (buffer[0] == 60) {//Estado q1 '<'
-        symbol[0] = buffer[0];
+
         fread(&buffer[0], sizeof(char), 1, pos);
 
         if (buffer[0] == 61) {//Estado q2 '='
@@ -54,7 +177,6 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
         return 1; // retorna true
     } else if (buffer[0] == 62) { // Estado q6 '>'
         fread(&buffer[0], sizeof(char), 1, pos);
-        symbol[0] = buffer[0];
 
         if (buffer[0] == 61) {// Estado q7 '='
             strcat(symbol, buffer);
@@ -84,9 +206,9 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
         strcpy(tk->nome_simbolo, simb_div); // "simb_div"
         return 1; // retorna true
     } else if (buffer[0] == 58) { // Estado q13 ':'
-        symbol[0] = buffer[0];
         fread(&buffer[0], sizeof(char), 1, pos);
         if (buffer[0] == 61) { //Estado q14 '='
+            strcat(symbol,buffer);
             strcpy(tk->simbolo_lido, symbol); // ':='
             strcpy(tk->nome_simbolo, simb_atrib); // "simb_atrib"
             return 1; // retorna true
@@ -106,7 +228,7 @@ int automato_ident(FILE *pos, token* tk) {
 //    int pos_count = 0;
     char id[50];
     char buffer[2];
-    char simb[] = "ident";
+    char simb_ident[] = "ident";
 
     //Estado q0
     fread(&buffer[0], sizeof(char), 1, pos);
@@ -128,11 +250,11 @@ int automato_ident(FILE *pos, token* tk) {
 //            pos_count++;
         }
 
-        if(buffer[0] == ';' || buffer[0] == '*' || buffer[0] == '=')
+        if(simbolo_valido(buffer) == 1)
         {
             //simbolo valido apos ident
             strcpy(tk->simbolo_lido,id);
-            strcpy(tk->nome_simbolo,simb);
+            strcpy(tk->nome_simbolo,simb_ident);
             fseek(pos, -1, SEEK_CUR);
             return 1;
         } else {
@@ -167,9 +289,8 @@ int automato_palavraReservada(FILE *pos, token* tk) {
         pos_count++;
     }
 
-    if(strcmp(palavra,"program") == 0) {
+    if(checa_palavraReservada(palavra, tk) == 1) {
         strcpy(tk->simbolo_lido,palavra);
-        strcpy(tk->nome_simbolo,"simb_program");
         fseek(pos, -1, SEEK_CUR);
         return 1;
     } else {
@@ -218,6 +339,7 @@ int automato_numero(FILE *pos, token* tk) {
     //checando o simbolo pos digito
     if (buffer[0] == 46) {
         //eh ponto
+        strcat(numero, buffer);
         fread(&buffer[0], sizeof(char), 1, pos);
 
         if (buffer[0] >= 48 && buffer[0] <= 57) {
@@ -360,7 +482,7 @@ int automato_caractereInvalido(FILE* pos, token* tk){
     fread(&buffer[0], sizeof(char), 1, pos);
     buffer[1]='\0';
 
-    if(buffer[0] == '\n' || buffer[0] == '\b'){
+    if(buffer[0] == '\n' || buffer[0] == ' '){
         //ignorar
         return 0;
     }
