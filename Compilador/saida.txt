@@ -1,9 +1,8 @@
 program, simb_program
 p, ident
 ;, simb_pv
-var, simb_var
+{}, simb_comentario
 x, ident
-@, erro("caractere nao permitido")
 :=, simb_atrib
-aaaaaaaaaa, erro("Identificador muito grande")
+2.21, num_real
 ;, simb_pv

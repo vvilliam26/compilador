@@ -422,10 +422,10 @@ int automato_comentario(FILE *pos, token* tk) {
 
     if (buffer[0] == '{') {
         //abre chaves
-        fread(&buffer[0], sizeof(char), 1, pos);
-        while (buffer[0] != '}' && buffer[0] != EOF) {
+        while ((buffer[0] = getc(pos) ) != EOF) {
             //comentario nao fechado
-            fread(&buffer[0], sizeof(char), 1, pos);
+            if(buffer[0] == '}')
+                break;
         }
 
         if (buffer[0] == '}') {
@@ -434,8 +434,9 @@ int automato_comentario(FILE *pos, token* tk) {
 //            fseek(pos, -1, SEEK_CUR);
             return 1;
         } else {
-            //comentario nao fechado
-            return -1;
+            strcpy(tk->simbolo_lido,"{");
+            strcpy(tk->nome_simbolo,"erro(\"Comentario nao fechado\")");
+            return 1;
         }
 
     } else {
