@@ -389,25 +389,25 @@ int automato_numero(FILE *pos, token* tk) {
 }
 
 int automato_comentario(FILE *pos, token* tk) {
-    char chaves[2] = "{}";
+    char chaves[] = "{}";
     char buffer[2];
     char simb_coment[] = "simb_comentario";
 
     fread(&buffer[0], sizeof(char), 1, pos);
     buffer[1]='\0';
 
-    if (buffer[0] == 123) {
+    if (buffer[0] == '{') {
         //abre chaves
         fread(&buffer[0], sizeof(char), 1, pos);
-        while (buffer[0] != 125 && buffer[0] != EOF) {
+        while (buffer[0] != '}' && buffer[0] != EOF) {
             //comentario nao fechado
             fread(&buffer[0], sizeof(char), 1, pos);
         }
 
-        if (buffer[0] == 125) {
+        if (buffer[0] == '}') {
             strcpy(tk->simbolo_lido,chaves);
             strcpy(tk->nome_simbolo,simb_coment);
-            fseek(pos, -1, SEEK_CUR);
+//            fseek(pos, -1, SEEK_CUR);
             return 1;
         } else {
             //comentario nao fechado
