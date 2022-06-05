@@ -182,7 +182,7 @@ int automato_palavraReservada(FILE *pos, token* tk) {
 }
 
 int automato_numero(FILE *pos, token* tk) {
-    char numero[100];
+    char numero[50] = "";
     char buffer[2];
     char simb_int[] = "num_int";
     char simb_real[] = "num_real";
@@ -192,7 +192,7 @@ int automato_numero(FILE *pos, token* tk) {
 
     //estado q0 -> q1
     if (buffer[0] == 43 || buffer[0] == 45) {
-        //buffer eh +, - ou digito
+        //buffer eh +, -
         strcat(numero, buffer);
 
     } else if(buffer[0] >= 48 && buffer[0] <= 57)
@@ -216,8 +216,8 @@ int automato_numero(FILE *pos, token* tk) {
     }
 
     //checando o simbolo pos digito
-    if (buffer[0] == 44) {
-        //eh virgula
+    if (buffer[0] == 46) {
+        //eh ponto
         fread(&buffer[0], sizeof(char), 1, pos);
 
         if (buffer[0] >= 48 && buffer[0] <= 57) {
@@ -236,7 +236,7 @@ int automato_numero(FILE *pos, token* tk) {
             strcat(numero, buffer);
             fread(&buffer[0], sizeof(char), 1, pos);
         }
-    } else if(buffer[0] == 1)
+    } else if(buffer[0] == ';' || buffer[0] == '+' || buffer[0] == '-' || buffer[0] == '*')
     {
         //nao eh virgula mas eh um simbolo valido que encerra o numero inteiro
         strcpy(tk->simbolo_lido,numero);
@@ -354,11 +354,28 @@ int automato_parPontoPv(FILE* pos, token* tk) {
     return 0;
 }
 
+int automato_caractereInvalido(FILE* pos, token* tk){
+    char buffer[2];
+
+    fread(&buffer[0], sizeof(char), 1, pos);
+    buffer[1]='\0';
+
+    if(buffer[0] == '\n' || buffer[0] == '\b'){
+        //ignorar
+        return 0;
+    }
+
+    strcpy(tk->simbolo_lido, buffer);
+    strcpy(tk->nome_simbolo, "erro(\"caractere nao permitido\")");
+
+    return 1;
+}
 
 int main() {
     FILE* pos;
-//    char *filename;
+//    char filename[50];
     token tk;
+    char c;
 
 //    printf("Digite o nome do arquivo");
 //    scanf("%s", filename);
@@ -372,8 +389,9 @@ int main() {
     }
 
 
-    while(feof(pos) == 0)
+    while((c = getc(pos) ) != EOF)
     {
+        fseek(pos,-1,SEEK_CUR);
         if(automato_palavraReservada(pos, &tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
@@ -397,6 +415,11 @@ int main() {
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
+        else if(automato_caractereInvalido(pos,&tk) == 1)
+        {
+            printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+        }
+
     }
 
     fclose(pos);
