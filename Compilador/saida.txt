@@ -5,6 +5,6 @@ var, simb_var
 x, ident
 @, erro("caractere nao permitido")
 :=, simb_atrib
-2., erro("Numero mal formatado")
-!, erro("caractere nao permitido")
+2.a, erro("Numero mal formatado")
+b, ident
 ;, simb_pv

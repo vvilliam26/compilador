@@ -305,6 +305,7 @@ int automato_numero(FILE *pos, token* tk) {
     char buffer[2];
     char simb_int[] = "num_int";
     char simb_real[] = "num_real";
+    int tam = 0;
 
     fread(&buffer[0], sizeof(char), 1, pos);
     buffer[1]='\0';
@@ -317,6 +318,7 @@ int automato_numero(FILE *pos, token* tk) {
 //    } else
     if(buffer[0] >= 48 && buffer[0] <= 57)
     {
+        tam++;
         //estado qo -> q2 eh digito
         strcat(numero, buffer);
     }else
@@ -331,12 +333,22 @@ int automato_numero(FILE *pos, token* tk) {
     //estado q2
     while (buffer[0] >= 48 && buffer[0] <= 57) {
         //eh digito
+        tam++;
         strcat(numero, buffer);
         fread(&buffer[0], sizeof(char), 1, pos);
     }
 
+        //numero muito grande
+        if(tam >= 49) {
+            numero[49] = '\0';
+            strcpy(tk->simbolo_lido,numero);
+            strcpy(tk->nome_simbolo,"erro(\"Numero muito grande\")");
+            fseek(pos, -1, SEEK_CUR);
+            return 1;
+        }
+
     //checando o simbolo pos digito
-    if (buffer[0] == 46) {
+    if (buffer[0] == '.') {
         //eh ponto
         strcat(numero, buffer);
         fread(&buffer[0], sizeof(char), 1, pos);
@@ -346,9 +358,9 @@ int automato_numero(FILE *pos, token* tk) {
             strcat(numero, buffer);
         } else {
             //numero mal formatado
+            strcat(numero, buffer);
             strcpy(tk->simbolo_lido,numero);
             strcpy(tk->nome_simbolo,"erro(\"Numero mal formatado\")");
-            fseek(pos, -1, SEEK_CUR);
             return 1;
         }
 
