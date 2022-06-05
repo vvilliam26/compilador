@@ -275,7 +275,6 @@ int automato_palavraReservada(FILE *pos, token* tk) {
     int pos_count = 0;
     char palavra[50] = "";
     char buffer[2];
-    char simb[40];
 
     fread(&buffer[0], sizeof(char), 1, pos);
     pos_count++;
@@ -494,57 +493,69 @@ int automato_caractereInvalido(FILE* pos, token* tk){
 }
 
 int main() {
-    FILE* pos;
+    FILE *pos, *saida;
 //    char filename[50];
     token tk;
     char c;
+    char path[] = "../casos_teste/";
+    char filename[40];
 
-//    printf("Digite o nome do arquivo");
-//    scanf("%s", filename);
+    printf("Digite o nome do arquivo.txt que esta na pasta casos_teste: ");
+    scanf("%s", filename);
 
+    strcat(path, filename);
 
-    pos = fopen("../casos_Teste/1.txt", "r");
+    pos = fopen(path, "r");
+    saida = fopen("saida.txt", "w+");
 
     if(!pos) {
         printf("Erro ao abrir o arquivo.\n");
         return 0;
     }
 
-
+    system("cls");
     while((c = getc(pos) ) != EOF)
     {
         fseek(pos,-1,SEEK_CUR);
         if(automato_palavraReservada(pos, &tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+            fprintf(saida,"%s, %s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
         else if(automato_ident(pos,&tk) == 1) {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+            fprintf(saida,"%s, %s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
         else if(automato_parPontoPv(pos,&tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+            fprintf(saida,"%s, %s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
         else if(automato_comentario(pos,&tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+            fprintf(saida,"%s, %s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
         else if(automato_numero(pos,&tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+            fprintf(saida,"%s, %s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
         else if(automato_operel_sinmat_atrib_dp(pos,&tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+            fprintf(saida,"%s, %s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
         else if(automato_caractereInvalido(pos,&tk) == 1)
         {
             printf("%s,%s\n",tk.simbolo_lido,tk.nome_simbolo);
+            fprintf(saida,"%s, %s\n",tk.simbolo_lido,tk.nome_simbolo);
         }
 
     }
 
     fclose(pos);
+    fclose(saida);
 
     return 0;
 }
