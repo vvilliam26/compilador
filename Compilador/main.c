@@ -346,8 +346,10 @@ int automato_numero(FILE *pos, token* tk) {
             strcat(numero, buffer);
         } else {
             //numero mal formatado
+            strcpy(tk->simbolo_lido,numero);
+            strcpy(tk->nome_simbolo,"erro(\"Numero mal formatado\")");
             fseek(pos, -1, SEEK_CUR);
-            return -1;
+            return 1;
         }
 
         fread(&buffer[0], sizeof(char), 1, pos);
@@ -366,12 +368,12 @@ int automato_numero(FILE *pos, token* tk) {
         return 1;
     } else
     {
-        //simbolo invalido -> numero mal formatado
+        //simbolo invalido
         fseek(pos, -1, SEEK_CUR);
         return -1;
     }
 
-    if(buffer[0] == ';')
+    if(valida_simbolo(buffer) == 1)
     {
         //simb valido para determinar o numero real
         strcpy(tk->simbolo_lido,numero);
