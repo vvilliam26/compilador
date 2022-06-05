@@ -9,7 +9,7 @@ typedef struct token {
 
 
 int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
-    char symbol[2] ="";
+    char symbol[3] = "";
     char buffer[2];
     char simb_meig[] = "simb_meig";
     char simb_dif[] = "simb_dif";
@@ -29,7 +29,7 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
     buffer[1] = '\0';
 
     if (buffer[0] == 60) {//Estado q1 '<'
-        strcat(symbol, buffer);
+        symbol[0] = buffer[0];
         fread(&buffer[0], sizeof(char), 1, pos);
 
         if (buffer[0] == 61) {//Estado q2 '='
@@ -49,12 +49,12 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
             return 1; // retorna true
         }
     } else if (buffer[0] == 61) { // Estado q5 '='
-        strcpy(tk->simbolo_lido, symbol); // '='
+        strcpy(tk->simbolo_lido, buffer); // '='
         strcpy(tk->nome_simbolo, simb_ig); // "simb_ig"
         return 1; // retorna true
     } else if (buffer[0] == 62) { // Estado q6 '>'
         fread(&buffer[0], sizeof(char), 1, pos);
-        strcat(symbol, buffer);
+        symbol[0] = buffer[0];
 
         if (buffer[0] == 61) {// Estado q7 '='
             strcat(symbol, buffer);
@@ -68,23 +68,23 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
             return 1; // retorna true
         }
     } else if (buffer[0] == 43) { // Estado q9 '+'
-        strcpy(tk->simbolo_lido, symbol); // '+'
+        strcpy(tk->simbolo_lido, buffer); // '+'
         strcpy(tk->nome_simbolo, simb_soma); // "simb_soma"
         return 1; // retorna true
     } else if (buffer[0] == 45) { // Estado q10 '-'
-        strcpy(tk->simbolo_lido, symbol); // '-'
+        strcpy(tk->simbolo_lido, buffer); // '-'
         strcpy(tk->nome_simbolo, simb_subt); // "simb_subt"
         return 1; // retorna true
     } else if (buffer[0] == 42) { // Estado q11 '*'
-        strcpy(tk->simbolo_lido, symbol); // '*'
+        strcpy(tk->simbolo_lido, buffer); // '*'
         strcpy(tk->nome_simbolo, simb_mult); // "simb_mult"
         return 1; // retorna true
     } else if (buffer[0] == 47) { // Estado q12 '/'
-        strcpy(tk->simbolo_lido, symbol); // '/'
+        strcpy(tk->simbolo_lido, buffer); // '/'
         strcpy(tk->nome_simbolo, simb_div); // "simb_div"
         return 1; // retorna true
     } else if (buffer[0] == 58) { // Estado q13 ':'
-        strcat(symbol, buffer);
+        symbol[0] = buffer[0];
         fread(&buffer[0], sizeof(char), 1, pos);
         if (buffer[0] == 61) { //Estado q14 '='
             strcpy(tk->simbolo_lido, symbol); // ':='
@@ -372,7 +372,7 @@ int main() {
     }
 
 
-    while(!feof(pos))
+    while(feof(pos) == 0)
     {
         if(automato_palavraReservada(pos, &tk) == 1)
         {
