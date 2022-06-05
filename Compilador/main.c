@@ -92,7 +92,7 @@ int checa_palavraReservada(char* palavra, token* tk) {
     return 0;
 }
 
-int simbolo_valido(char* simb) {
+int valida_simbolo(char* simb) {
     if(strcmp(simb, "="))
         return 1;
     else if(strcmp(simb, "<>"))
@@ -152,7 +152,6 @@ int automato_operel_sinmat_atrib_dp(FILE *pos, token* tk) {
     symbol[0] = buffer[0];
 
     if (buffer[0] == 60) {//Estado q1 '<'
-
         fread(&buffer[0], sizeof(char), 1, pos);
 
         if (buffer[0] == 61) {//Estado q2 '='
@@ -250,7 +249,7 @@ int automato_ident(FILE *pos, token* tk) {
 //            pos_count++;
         }
 
-        if(simbolo_valido(buffer) == 1)
+        if(valida_simbolo(buffer) == 1)
         {
             //simbolo valido apos ident
             strcpy(tk->simbolo_lido,id);
@@ -312,11 +311,12 @@ int automato_numero(FILE *pos, token* tk) {
     buffer[1]='\0';
 
     //estado q0 -> q1
-    if (buffer[0] == 43 || buffer[0] == 45) {
-        //buffer eh +, -
-        strcat(numero, buffer);
-
-    } else if(buffer[0] >= 48 && buffer[0] <= 57)
+//    if (buffer[0] == 43 || buffer[0] == 45) {
+//        buffer eh +, -
+//        strcat(numero, buffer);
+//
+//    } else
+    if(buffer[0] >= 48 && buffer[0] <= 57)
     {
         //estado qo -> q2 eh digito
         strcat(numero, buffer);
@@ -358,7 +358,7 @@ int automato_numero(FILE *pos, token* tk) {
             strcat(numero, buffer);
             fread(&buffer[0], sizeof(char), 1, pos);
         }
-    } else if(buffer[0] == ';' || buffer[0] == '+' || buffer[0] == '-' || buffer[0] == '*')
+    } else if(valida_simbolo(buffer) == 1)
     {
         //nao eh virgula mas eh um simbolo valido que encerra o numero inteiro
         strcpy(tk->simbolo_lido,numero);
@@ -482,7 +482,7 @@ int automato_caractereInvalido(FILE* pos, token* tk){
     fread(&buffer[0], sizeof(char), 1, pos);
     buffer[1]='\0';
 
-    if(buffer[0] == '\n' || buffer[0] == ' '){
+    if(buffer[0] == '\n' || buffer[0] == ' ' || buffer[0] == '\t'){
         //ignorar
         return 0;
     }
