@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "hashtable.h"
 
 
 
@@ -38,7 +38,7 @@ char *automato_operadores_relacionais(FILE *pos) {
     return symbol;
 }
 
-char *automato_ident(FILE *pos) {
+char *automato_ident(FILE *pos, dict** tabela) {
     FILE *aux;
     aux = pos;
     char id[100];
@@ -59,7 +59,7 @@ char *automato_ident(FILE *pos) {
             strcat(id, buffer);
         }
 
-        if(BATE_HASH(buffer))
+        if(bate_hash(buffer, tabela));
         {
 
         }
@@ -73,6 +73,27 @@ char *automato_ident(FILE *pos) {
 
 
 int main() {
+    char* simb_reservados = "./dados/simbolosReservados.txt";
+    dict** tabela;
+    tabela = (dict**)malloc(1000*sizeof(dict*));
+    cria_hash(simb_reservados, tabela);
+
+    for(int i=0; i< 1000; i++)
+    {
+        dict* no = tabela[i];
+        
+        while(no!=NULL)
+        {
+            printf("%s ", no->word);
+            if(no->next!=NULL){
+                no = no->next;
+            }
+        }
+        printf("\n");
+    }
+    
+
+    free(tabela);
     printf("Hello world!\n");
     return 0;
 }
