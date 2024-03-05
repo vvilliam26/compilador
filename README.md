@@ -1,22 +1,3 @@
 # Compilador de C
 
-lista de palavras reservadas:
-var, program, begin, end, const, real, integer, procedure, else, read, write, while, if, do, then, *for*
-
-= -> simb_ig
-<> -> simb_dif
->= -> simb_meig
-<= -> simb_maig
-> -> simb_maior
-< -> simb_menor
-+ -> simb_mais
-- -> simb_menos
-* -> simb_vezes
-/ -> simb_div
-; -> simb_pv
-: -> simb_dp
-:= -> simb_atrib
-( -> simb_apar
-) -> simb_fpar
-. -> simb_p
-
+Implementação de uma máquina de estados finita para compilar códigos em C
