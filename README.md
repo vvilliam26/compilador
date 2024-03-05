@@ -1,4 +1,4 @@
-# trab_kompilators
+# Compilador de C
 
 ident: revisar
 numero (real e int): revisar
